@@ -39,7 +39,8 @@ Program::Program (const std::string& file) : name_ (file) {
   bool is_first {true};
   bool in_comment {false};
   std::string comment_content;
-  Comment comment;
+      Comment comment;
+
   while (std::getline(infile, line)) {
     std::smatch result;
 
@@ -47,35 +48,9 @@ Program::Program (const std::string& file) : name_ (file) {
       is_main_.setMain(true);
     }
 
-    if (line.find("/*") != std::string::npos) {
-      in_comment = true;
-      comment.setStartLine(line_number);
-      comment_content = line; 
-    } else if (in_comment) {
-      comment_content += "\n" + line; 
-    }
-
-    if (line.find("*/") != std::string::npos && in_comment) {
-      in_comment = false;
-      if (is_first) {
-        comment.setDescription(true);
-        is_first = false;
-      }
-      comment.setFinishLine(line_number);
-      comment.setContent(comment_content);
+    if (Comment::DetectComment(line, result, in_comment, comment_content, line_number, comment, is_first)) {
       comments_.push_back(comment);
-      comment_content.clear(); 
-      comment = Comment();
-    }
-
-    if (!in_comment && Comment::DetectComment(line, result)) {
-      Comment new_comment(line_number, line_number, result.str());
-      if (is_first) {
-        new_comment.setDescription(true);
-        is_first = false;
-      }
-      comments_.push_back(new_comment);
-    }
+    } 
 
     if (Variable::DetectType(line, result)) {
       Variable new_var(line_number, result.str(1), result.str(2)); 

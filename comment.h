@@ -48,7 +48,8 @@ class Comment {
   void setContent (const std::string& content) {content_ = content;}
   void setDescription (const bool description) {description_ = description;}
   
-  static bool DetectComment (const std::string&, std::smatch&);
+  static bool DetectComment(const std::string& line, std::smatch& result, bool& in_comment, std::string& comment_content, int line_number, Comment& comment, bool& is_first);
+
 
 };
 std::ostream& operator<<(std::ostream& os, const Comment&);
